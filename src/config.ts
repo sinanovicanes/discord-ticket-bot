@@ -1,0 +1,27 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+const { DISCORD_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID } = process.env;
+
+if (!DISCORD_TOKEN || !DISCORD_CLIENT_ID || !DISCORD_GUILD_ID) {
+  throw new Error("Missing Environment Variables");
+}
+
+const REQUIRED_PERMISSIONS = 17179869184; // Manage Threads
+const TICKET_CHANNEL_ID = "1122511309850804286";
+
+export {
+  DISCORD_TOKEN,
+  DISCORD_CLIENT_ID,
+  DISCORD_GUILD_ID,
+  REQUIRED_PERMISSIONS,
+  TICKET_CHANNEL_ID
+};
+
+export default {
+  DISCORD_TOKEN,
+  DISCORD_CLIENT_ID,
+  DISCORD_GUILD_ID,
+  REQUIRED_PERMISSIONS,
+  TICKET_CHANNEL_ID
+};

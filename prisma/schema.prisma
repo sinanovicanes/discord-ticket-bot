@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model BannedUsers {
+  id          String    @id
+  bannedAt    DateTime  @default(now())
+  bannedUntil DateTime?
+}
+
+model Tickets {
+  id          String    @id @default(uuid())
+  userId      String
+  threadId    String    @unique
+  description String
+  createdAt   DateTime  @default(now())
+  archived    DateTime?
+}
