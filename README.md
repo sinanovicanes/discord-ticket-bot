@@ -15,7 +15,7 @@ A node.js discord bot written to create and manage tickets via threads.
    | DISCORD_TOKEN | string | Your discord app's token |
    | DISCORD_CLIENT_ID | string | Your discord bot's client id |
    | DISCORD_GUILD_ID | string | Discord server id |
-1. Give the bot permissions on your server using this url `https://discordapp.com/oauth2/authorize?client_id=__CLIENT_ID__&scope=bot&permissions=17179871232` and replace `__CLIENT_ID__` with your bot's client id.
+1. Give the bot permissions on your server using this url `https://discord.com/oauth2/authorize?client_id=__CLIENT_ID__&permissions=19327354880&scope=bot%20applications.commands` and replace `__CLIENT_ID__` with your bot's client id.
 1. You need to create text channel for threads and set channel id from `config.ts->TICKET_CHANNEL_ID`. Threads will be created from this channel.
 1. Run `npx prisma db push` to push database.
 1. Run `npm run start` to start the bot.
