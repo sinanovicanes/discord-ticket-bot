@@ -1,6 +1,9 @@
 import {
+  AutocompleteInteraction,
   ChannelType,
+  Colors,
   CommandInteraction,
+  EmbedBuilder,
   SlashCommandBuilder,
   ThreadChannel
 } from "discord.js";
@@ -13,12 +16,15 @@ const name = "close";
 const commandBuild = new SlashCommandBuilder()
   .setName(name)
   .setDescription("Closes ticket")
-  .addChannelOption(option =>
+  .addStringOption(option =>
     option
       .setName("channel")
       .setDescription("Ticket to close")
       .setRequired(true)
-      .addChannelTypes(ChannelType.PrivateThread)
+      .setAutocomplete(true)
+  )
+  .addBooleanOption(option =>
+    option.setName("solved").setDescription("Is ticket solved").setRequired(true)
   );
 
 const command = new Command({
@@ -29,8 +35,10 @@ const command = new Command({
     interaction: CommandInteraction,
     { client, guild, userData }: CommandExecuteParams
   ) => {
-    const threadId = interaction.options.get("channel")!.value!;
-    const thread = client.channels.cache.get(threadId.toString()) as ThreadChannel;
+    const threadId = interaction.options.get("channel")!.value! as string;
+    const solved: boolean =
+      (interaction.options.get("solved")?.value as boolean) ?? false;
+    const thread = client.channels.cache.get(threadId) as ThreadChannel;
     if (!thread.name.includes("ticket-"))
       return interaction.reply({
         content: "Selected thread is not a support ticket",
@@ -42,17 +50,49 @@ const command = new Command({
     archiveTicket(ticketId);
     const members = await thread.members.fetch();
 
-    thread.setName(`closed-${thread.name}`);
-    thread.setArchived(true);
     members.forEach(member => {
       if (member.id == DISCORD_CLIENT_ID) return;
       thread.members.remove(member.id);
+    });
+
+    const embed = new EmbedBuilder({
+      author: {
+        name: client.user!.username,
+        iconURL: client.user!.avatarURL() as string
+      },
+      title: "Closed",
+      description: `**Solved:** ${solved ? ":heavy_plus_sign:" : ":heavy_minus_sign:"}`,
+      color: Colors.DarkBlue,
+      timestamp: Date.now()
+    });
+
+    thread.send({ embeds: [embed] }).then(() => {
+      thread.setName(`closed-${thread.name}`).then(() => thread.setArchived(true));
     });
 
     return interaction.reply({
       content: "Thread archived",
       ephemeral: true
     });
+  },
+  autocomplete: async (
+    interaction: AutocompleteInteraction,
+    { client, guild, userData }: CommandExecuteParams
+  ) => {
+    const focusedOption = interaction.options.getFocused(true);
+    const channels = client.channels.cache.filter(
+      channel =>
+        channel.type == ChannelType.PrivateThread &&
+        channel.name.startsWith("ticket-") &&
+        channel.name.includes(focusedOption.value)
+    );
+
+    await interaction.respond(
+      channels.map(channel => ({
+        name: (channel as ThreadChannel).name,
+        value: channel.id
+      }))
+    );
   }
 });
 
