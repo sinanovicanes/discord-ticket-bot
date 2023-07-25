@@ -29,7 +29,7 @@ const command = new Command({
     interaction: CommandInteraction,
     { client, guild, userData }: CommandExecuteParams
   ) => {
-    const threadId = interaction.options.data.find(op => op.name == "channel")!.value!;
+    const threadId = interaction.options.get("channel")!.value!;
     const thread = client.channels.cache.get(threadId.toString()) as ThreadChannel;
     if (!thread.name.includes("ticket-"))
       return interaction.reply({

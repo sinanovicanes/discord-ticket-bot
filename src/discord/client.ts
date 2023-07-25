@@ -1,4 +1,4 @@
-import { ActivityType, Client, Guild } from "discord.js";
+import { Client, Events, Guild } from "discord.js";
 import Config from "@/config";
 import { CommandDeployer } from "./command-deployer";
 import * as commandModules from "./commands";
@@ -47,7 +47,38 @@ export class DiscordBot {
       Config.DISCORD_CLIENT_ID,
       Config.DISCORD_GUILD_ID
     ).then(() => {
-      this.client.on("interactionCreate", async interaction => {
+      this.client.on(Events.InteractionCreate, async interaction => {
+        if (!interaction.isAutocomplete()) return;
+
+        const { commandName, user } = interaction;
+        const userData = await new User(this.client, this.guild!, user).fetch();
+
+        const { banned, message } = userData.isBanned();
+
+        if (banned) {
+          return;
+        }
+
+        const command = commands[commandName];
+
+        if (!command.autocomplete || (command.admin && !userData.admin)) {
+          return;
+        }
+
+        try {
+          command.autocomplete(interaction, {
+            client: this.client,
+            guild: this.guild!,
+            userData
+          });
+        } catch (error) {
+          console.log(`Error while auto completing ${commandName}`);
+          console.log(error);
+        }
+        return;
+      });
+
+      this.client.on(Events.InteractionCreate, async interaction => {
         if (!interaction.isCommand()) return;
         const { commandName, user } = interaction;
         const userData = await new User(this.client, this.guild!, user).fetch();

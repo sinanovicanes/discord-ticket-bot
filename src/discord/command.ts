@@ -1,4 +1,8 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  AutocompleteInteraction,
+  CommandInteraction,
+  SlashCommandBuilder
+} from "discord.js";
 import { CommandExecuteParams } from "./types";
 import { REQUIRED_PERMISSIONS } from "@/config";
 
@@ -7,6 +11,10 @@ interface CommandParams {
   command: SlashCommandBuilder;
   admin?: boolean;
   execute: (interaction: CommandInteraction, data: CommandExecuteParams) => void;
+  autocomplete?: (
+    interaction: AutocompleteInteraction,
+    data: CommandExecuteParams
+  ) => void;
 }
 
 export class Command {
@@ -14,12 +22,17 @@ export class Command {
   command: SlashCommandBuilder;
   admin: boolean;
   execute: (interaction: CommandInteraction, data: CommandExecuteParams) => void;
+  autocomplete?: (
+    interaction: AutocompleteInteraction,
+    data: CommandExecuteParams
+  ) => void;
 
-  constructor({ name, command, admin = false, execute }: CommandParams) {
+  constructor({ name, command, admin = false, execute, autocomplete }: CommandParams) {
     this.name = name;
     this.command = command;
     this.admin = admin;
     this.execute = execute;
+    this.autocomplete = autocomplete;
     if (this.admin) {
       this.command.setDefaultMemberPermissions(REQUIRED_PERMISSIONS);
     }

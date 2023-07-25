@@ -27,9 +27,8 @@ const command = new Command({
     interaction: CommandInteraction,
     { client, guild, userData }: CommandExecuteParams
   ) => {
-    const channelId = interaction.options.data.find(op => op.name == "channel")!.value!;
-    const message = interaction.options.data.find(op => op.name == "message")!
-      .value! as string;
+    const channelId = interaction.options.get("channel")!.value!;
+    const message = interaction.options.get("message")!.value! as string;
     const channel = client.channels.cache.get(channelId.toString()) as TextChannel;
 
     if (!channel)

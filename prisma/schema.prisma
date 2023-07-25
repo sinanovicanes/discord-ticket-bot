@@ -17,10 +17,10 @@ model BannedUsers {
 }
 
 model Tickets {
-  id          String    @id @default(uuid())
-  userId      String
-  threadId    String    @unique
-  description String
-  createdAt   DateTime  @default(now())
-  archived    DateTime?
+  id        String    @id @default(uuid())
+  userId    String
+  threadId  String    @unique
+  title     String
+  createdAt DateTime  @default(now())
+  archived  DateTime?
 }

@@ -33,9 +33,8 @@ const command = new Command({
     interaction: CommandInteraction,
     { client, guild, userData }: CommandExecuteParams
   ) => {
-    const user = interaction.options.data.find(op => op.name == "user")!.user!;
-    const duration = interaction.options.data.find(op => op.name == "duration")!
-      .value! as number;
+    const user = interaction.options.get("user")!.user!;
+    const duration = interaction.options.get("duration")!.value! as number;
 
     const targetUser = new User(client, guild, user);
 

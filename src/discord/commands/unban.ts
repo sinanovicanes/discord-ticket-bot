@@ -20,7 +20,7 @@ const command = new Command({
     interaction: CommandInteraction,
     { client, guild, userData }: CommandExecuteParams
   ) => {
-    const user = interaction.options.data.find(op => op.name == "user")!.user!;
+    const user = interaction.options.get("user")!.user!;
     const targetUser = await new User(client, guild, user).fetch();
 
     const { banned } = targetUser.isBanned();

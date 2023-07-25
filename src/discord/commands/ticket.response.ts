@@ -1,8 +1,10 @@
 import {
+  AutocompleteInteraction,
   ChannelType,
   CommandInteraction,
   SlashCommandBuilder,
-  TextChannel
+  TextChannel,
+  ThreadChannel
 } from "discord.js";
 import { CommandExecuteParams } from "../types";
 import { Command } from "../command";
@@ -11,18 +13,19 @@ const name = "reply";
 const commandBuild = new SlashCommandBuilder()
   .setName(name)
   .setDescription("Replies ticket")
-  .addChannelOption(option =>
+  .addStringOption(option =>
     option
       .setName("channel")
       .setDescription("Ticket that message going to send")
       .setRequired(true)
-      .addChannelTypes(ChannelType.PrivateThread)
+      .setAutocomplete(true)
   )
   .addStringOption(option =>
     option
       .setName("message")
       .setDescription("Message that you want to send")
       .setRequired(true)
+      .setAutocomplete(true)
   );
 
 const command = new Command({
@@ -49,6 +52,25 @@ const command = new Command({
       content: `Message sended to ${channel.name}`,
       ephemeral: true
     });
+  },
+  autocomplete: async (
+    interaction: AutocompleteInteraction,
+    { client, guild, userData }: CommandExecuteParams
+  ) => {
+    const focusedOption = interaction.options.getFocused(true);
+    const channels = client.channels.cache.filter(
+      channel =>
+        channel.type == ChannelType.PrivateThread &&
+        channel.name.startsWith("ticket-") &&
+        channel.name.includes(focusedOption.value)
+    );
+
+    await interaction.respond(
+      channels.map(channel => ({
+        name: (channel as ThreadChannel).name,
+        value: channel.id
+      }))
+    );
   }
 });
 

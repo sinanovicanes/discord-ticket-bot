@@ -1,4 +1,11 @@
-import { ChannelType, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  ChannelType,
+  Colors,
+  CommandInteraction,
+  EmbedBuilder,
+  EmbedType,
+  SlashCommandBuilder
+} from "discord.js";
 import { prisma } from "@/api";
 import { CommandExecuteParams } from "../types";
 import { Command } from "../command";
@@ -9,7 +16,17 @@ const commandBuild = new SlashCommandBuilder()
   .setName(name)
   .setDescription("Creates a new support ticket")
   .addStringOption(option =>
-    option.setName("title").setDescription("Title of your problem").setRequired(true)
+    option
+      .setName("title")
+      .setDescription("Title of your problem")
+      .setRequired(true)
+      .setMaxLength(150)
+  )
+  .addStringOption(option =>
+    option
+      .setName("description")
+      .setDescription("Describe your problem")
+      .setRequired(true)
   );
 
 const command = new Command({
@@ -29,14 +46,16 @@ const command = new Command({
       name: `support-${Date.now()}`,
       reason: `Support Ticket ${Date.now()}`
     });
-    const description = interaction.options.data.find(d => d.name === "title")!.value;
+
+    const title = interaction.options.get("title", true)!.value as string;
+    const description = interaction.options.get("description", true)!.value as string;
     const { user } = interaction;
 
     const ticket = await prisma.tickets.create({
       data: {
         threadId: thread.id,
         userId: user.id,
-        description: description!.toString()
+        title
       }
     });
 
@@ -48,9 +67,19 @@ const command = new Command({
       });
     }
 
+    const message = new EmbedBuilder({
+      author: { name: user.username, icon_url: user.avatarURL() as string },
+      title: `Title: ${title}`,
+      description: `**Description** \n${description}`,
+      timestamp: Date.now(),
+      color: Colors.DarkBlue
+    });
+
     thread.members.add(user.id);
     thread.setName(`ticket-${ticket.id}`, `Ticket ${ticket.id}`);
-    thread.send(`**User:** ${user} **Problem:** ${description}`);
+    thread.send({
+      embeds: [message]
+    });
 
     return interaction.reply({
       content: "Support ticket created",

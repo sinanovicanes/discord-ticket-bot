@@ -17,7 +17,6 @@ export class User {
   guild: Guild;
   discord: DiscordUser;
   member: GuildMember;
-  roles: GuildMemberRoleManager;
 
   constructor(client: Client, guild: Guild, user: DiscordUser) {
     this.client = client;
@@ -27,7 +26,6 @@ export class User {
     this.avatar = user.avatarURL() ?? undefined;
     this.discord = user;
     this.member = this.guild.members.cache.get(this.id)!;
-    this.roles = this.member.roles;
     this.admin = this.member.permissions.has("ManageThreads");
   }
 
