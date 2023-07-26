@@ -67,23 +67,23 @@ const command = new Command({
       });
     }
 
+    interaction.reply({
+      content: "Support ticket created",
+      ephemeral: true
+    });
+
     const message = new EmbedBuilder({
       author: { name: user.username, icon_url: user.avatarURL() as string },
-      title: `Title: ${title}`,
+      title,
       description: `**Description** \n${description}`,
       timestamp: Date.now(),
       color: Colors.DarkBlue
     });
 
-    thread.members.add(user.id);
-    thread.setName(`ticket-${ticket.id}`, `Ticket ${ticket.id}`);
-    thread.send({
+    await thread.setName(`ticket-${ticket.id}`);
+    await thread.members.add(user.id);
+    await thread.send({
       embeds: [message]
-    });
-
-    return interaction.reply({
-      content: "Support ticket created",
-      ephemeral: true
     });
   }
 });

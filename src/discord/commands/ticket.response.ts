@@ -25,7 +25,6 @@ const commandBuild = new SlashCommandBuilder()
       .setName("message")
       .setDescription("Message that you want to send")
       .setRequired(true)
-      .setAutocomplete(true)
   );
 
 const command = new Command({
