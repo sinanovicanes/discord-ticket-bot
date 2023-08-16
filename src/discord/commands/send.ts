@@ -17,6 +17,7 @@ const commandBuild = new SlashCommandBuilder()
       .setName("message")
       .setDescription("Message that you want to send")
       .setRequired(true)
+      .setMaxLength(2000)
   );
 
 const command = new Command({

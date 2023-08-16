@@ -27,6 +27,7 @@ const commandBuild = new SlashCommandBuilder()
       .setName("description")
       .setDescription("Describe your problem")
       .setRequired(true)
+      .setMaxLength(2000)
   );
 
 const command = new Command({
